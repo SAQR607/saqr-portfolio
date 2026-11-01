@@ -1,0 +1,180 @@
+---
+/**
+ * Responsive frames — a schematic of how the project's layout reflows at the
+ * three target widths. Wireframe blocks in the project's own palette, so the
+ * section reads as part of the case study rather than generic filler.
+ */
+const { project, points } = Astro.props;
+
+const frames = [
+  {
+    key: 'desktop',
+    label: 'Desktop',
+    width: '≥ 1200px',
+    cols: 3,
+    ratio: '16 / 10',
+  },
+  { key: 'tablet', label: 'Tablet', width: '768 – 1199px', cols: 2, ratio: '4 / 3' },
+  { key: 'mobile', label: 'Mobile', width: '< 768px', cols: 1, ratio: '9 / 16' },
+];
+
+const vars = [
+  `--bg:${project.surface}`,
+  `--fg:${project.ink}`,
+  `--ac:${project.accent}`,
+].join(';');
+---
+
+<div class="resp" style={vars} data-stagger>
+  {
+    frames.map((frame, i) => (
+      <figure class="resp__frame" data-reveal-child>
+        <div class="resp__device" style={`aspect-ratio:${frame.ratio}`}>
+          <span class="resp__bar" aria-hidden="true">
+            <i />
+            <i />
+            <i />
+          </span>
+
+          <div class="resp__screen" aria-hidden="true">
+            <span class="wf wf--hero" />
+            <div class="resp__cols" style={`--cols:${frame.cols}`}>
+              <span class="wf" />
+              <span class="wf" />
+              {frame.cols === 3 && <span class="wf" />}
+            </div>
+            <span class="wf wf--wide" />
+            <div class="resp__cols" style={`--cols:${Math.max(1, frame.cols - 1)}`}>
+              <span class="wf wf--accent" />
+              <span class="wf wf--accent" />
+            </div>
+          </div>
+        </div>
+
+        <figcaption class="resp__cap">
+          <span class="resp__name">{frame.label}</span>
+          <span class="resp__w">{frame.width}</span>
+          <span class="resp__desc">{points[i]}</span>
+        </figcaption>
+      </figure>
+    ))
+  }
+</div>
+
+<style>
+  .resp {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(1.25rem, 3vw, 2.5rem);
+    align-items: start;
+  }
+
+  .resp__frame {
+    margin: 0;
+  }
+
+  .resp__device {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+    border: 1px solid var(--line-mid);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .resp__bar {
+    display: flex;
+    gap: 5px;
+    padding: 8px 10px;
+    background: color-mix(in srgb, var(--fg) 6%, var(--bg));
+    border-bottom: 1px solid color-mix(in srgb, var(--fg) 10%, transparent);
+    flex: none;
+  }
+
+  .resp__bar i {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--fg) 22%, transparent);
+  }
+
+  .resp__screen {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px;
+    min-height: 0;
+  }
+
+  .wf {
+    display: block;
+    height: 22px;
+    border-radius: 4px;
+    background: color-mix(in srgb, var(--fg) 12%, transparent);
+  }
+
+  .wf--hero {
+    height: 34%;
+    background: color-mix(in srgb, var(--fg) 9%, transparent);
+    border: 1px solid color-mix(in srgb, var(--fg) 12%, transparent);
+  }
+
+  .wf--wide {
+    height: 14px;
+  }
+
+  .wf--accent {
+    background: color-mix(in srgb, var(--ac) 30%, transparent);
+  }
+
+  .resp__cols {
+    display: grid;
+    grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .resp__cols .wf {
+    height: 30px;
+  }
+
+  .resp__cap {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    margin-top: 1rem;
+  }
+
+  .resp__name {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--paper);
+  }
+
+  .resp__w {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+  }
+
+  .resp__desc {
+    font-size: 0.85rem;
+    line-height: 1.55;
+    color: var(--paper-dim);
+  }
+
+  @media (max-width: 860px) {
+    .resp {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+
+    .resp__device {
+      max-width: 420px;
+    }
+  }
+</style>

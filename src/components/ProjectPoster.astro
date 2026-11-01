@@ -1,0 +1,140 @@
+---
+import PosterMark from './PosterMark.astro';
+
+/**
+ * Case-study "cover" card for a project, rendered entirely in CSS/SVG in that
+ * project's own palette — no image payload, and each one reads differently.
+ * Used inline in the work index and again, larger, in the cursor preview.
+ */
+const { project, size = 'sm' } = Astro.props;
+
+const style = [
+  `--bg:${project.surface}`,
+  `--fg:${project.ink}`,
+  `--ac:${project.accent}`,
+].join(';');
+---
+
+<div class={`poster poster--${size}`} style={style}>
+  <span class="poster__glow" aria-hidden="true"></span>
+  <span class="poster__idx" aria-hidden="true">{project.idx}</span>
+
+  <span class="poster__mark" aria-hidden="true">
+    <PosterMark type={project.mark} />
+  </span>
+
+  <span class="poster__meta">
+    <span class="poster__name">{project.name}</span>
+    <span class="poster__kind">{project.kind}</span>
+  </span>
+</div>
+
+<style>
+  .poster {
+    position: relative;
+    display: block;
+    aspect-ratio: 4 / 3;
+    width: 100%;
+    background: var(--bg);
+    color: var(--ac);
+    border: 1px solid rgba(127, 127, 127, 0.18);
+    border-radius: 6px;
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  .poster__glow {
+    position: absolute;
+    inset: -30% -10% auto;
+    height: 90%;
+    background: radial-gradient(60% 60% at 50% 40%, color-mix(in srgb, var(--ac) 26%, transparent), transparent 70%);
+    opacity: 0.75;
+    z-index: -1;
+  }
+
+  .poster__idx {
+    position: absolute;
+    top: 0.6em;
+    left: 0.75em;
+    font-family: var(--font-mono);
+    font-size: 0.58rem;
+    letter-spacing: 0.16em;
+    color: color-mix(in srgb, var(--fg) 55%, transparent);
+  }
+
+  .poster__mark {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    padding: 22% 26% 30%;
+  }
+
+  .poster__meta {
+    position: absolute;
+    left: 0.75em;
+    right: 0.75em;
+    bottom: 0.7em;
+    display: flex;
+    flex-direction: column;
+    gap: 0.1em;
+    line-height: 1.1;
+  }
+
+  .poster__name {
+    font-family: var(--font-display);
+    font-size: clamp(0.85rem, 1.6vw, 1.35rem);
+    letter-spacing: -0.015em;
+    color: var(--fg);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .poster__kind {
+    font-family: var(--font-mono);
+    font-size: 0.5rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--fg) 62%, transparent);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* ---------------------------------------------------------- large variant */
+  .poster--lg {
+    border-radius: 10px;
+  }
+
+  .poster--lg .poster__idx {
+    font-size: 0.7rem;
+    top: 0.9em;
+    left: 1.1em;
+  }
+
+  .poster--lg .poster__mark {
+    padding: 18% 24% 32%;
+  }
+
+  .poster--lg .poster__meta {
+    left: 1.1em;
+    right: 1.1em;
+    bottom: 1em;
+    gap: 0.2em;
+  }
+
+  .poster--lg .poster__name {
+    font-size: clamp(1.35rem, 2vw, 1.85rem);
+  }
+
+  .poster--lg .poster__kind {
+    font-size: 0.6rem;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .poster__glow {
+      opacity: 0.5;
+    }
+  }
+</style>

@@ -1,0 +1,159 @@
+---
+import '../styles/global.css';
+import { ClientRouter } from 'astro:transitions';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import { BASE, canonical, withBase } from '../lib/paths.js';
+import { site } from '../data/site.js';
+
+interface Props {
+  title?: string;
+  description?: string;
+  canonicalPath?: string;
+  image?: string;
+  imageAlt?: string;
+  robots?: string;
+  type?: string;
+  preloadPortrait?: boolean;
+  structuredData?: Record<string, unknown> | null;
+}
+
+const {
+  title,
+  description = site.description,
+  canonicalPath = Astro.url.pathname,
+  image = '/img/og.png',
+  imageAlt = `${site.fullName} — ${site.role}`,
+  robots = 'index, follow',
+  type = 'website',
+  preloadPortrait = false,
+  structuredData = null,
+} = Astro.props;
+
+const SITE_ORIGIN = 'https://saqr607.github.io';
+
+const pageTitle = title ? `${title} · ${site.fullName}` : `${site.fullName} — ${site.role}`;
+const canonicalURL = canonical(canonicalPath);
+const imageURL = `${SITE_ORIGIN}${withBase(image)}`;
+---
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content="#0a0a0c" />
+    <meta name="generator" content={Astro.generator} />
+
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <meta name="robots" content={robots} />
+    <link rel="canonical" href={canonicalURL} />
+    <meta name="author" content={site.fullName} />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content={type} />
+    <meta property="og:site_name" content={site.fullName} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:image" content={imageURL} />
+    <meta property="og:image:alt" content={imageAlt} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content="en_US" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={imageURL} />
+    <meta name="twitter:image:alt" content={imageAlt} />
+
+    <!-- Icons -->
+    <link rel="icon" href={withBase('/favicon.svg')} type="image/svg+xml" />
+    <link rel="apple-touch-icon" href={withBase('/apple-touch-icon.png')} />
+    <link rel="manifest" href={withBase('/site.webmanifest')} />
+
+    <!-- Self-hosted fonts: preload the faces that paint above the fold -->
+    {
+      preloadPortrait && (
+        <link
+          rel="preload"
+          as="image"
+          type="image/webp"
+          imagesrcset={[360, 520, 696]
+            .map((w) => `${BASE}/img/portrait-${w}.webp ${w}w`)
+            .join(', ')}
+          imagesizes="(min-width: 960px) 34vw, 72vw"
+        />
+      )
+    }
+    <link
+      rel="preload"
+      href={`${BASE}/fonts/inter-latin-wght-normal.woff2`}
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href={`${BASE}/fonts/instrument-serif-latin-400-normal.woff2`}
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href={`${BASE}/fonts/instrument-serif-latin-400-italic.woff2`}
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link rel="stylesheet" href={`${BASE}/fonts/fonts.css`} />
+
+    <!--
+      Flag that JS is available BEFORE first paint so reveal states apply without a
+      flash, then arm a failsafe: if the motion bundle never boots, drop the flag and
+      the content becomes visible again instead of staying hidden.
+    -->
+    <script is:inline>
+      (function () {
+        var d = document.documentElement;
+        d.classList.remove('no-js');
+        d.classList.add('js');
+        window.__saqrReady = false;
+        window.__saqrArmFailsafe = function () {
+          clearTimeout(window.__saqrFailsafe);
+          window.__saqrFailsafe = setTimeout(function () {
+            if (!window.__saqrReady) d.classList.remove('js');
+          }, 4000);
+        };
+        window.__saqrArmFailsafe();
+      })();
+    </script>
+
+    {structuredData && (
+      <script type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+    )}
+
+    <ClientRouter />
+  </head>
+
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <SiteHeader />
+
+    <main id="main" class="main" transition:animate="none">
+      <slot />
+    </main>
+
+    <SiteFooter />
+
+    <script>
+      import '../scripts/motion.js';
+    </script>
+  </body>
+</html>

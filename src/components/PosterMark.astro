@@ -1,0 +1,83 @@
+---
+/**
+ * Abstract identity marks — one per project. Geometry only, so they inherit
+ * `currentColor` and need no image payload.
+ */
+const { type } = Astro.props;
+---
+
+<svg class="mk" viewBox="0 0 100 100" fill="none" aria-hidden="true" focusable="false">
+  {
+    type === 'layers' && (
+      <g stroke="currentColor" stroke-width="4.5" stroke-linejoin="round" stroke-linecap="round">
+        <path d="M50 20 88 40 50 60 12 40Z" />
+        <path d="M12 54 50 74 88 54" />
+        <path d="M12 68 50 88 88 68" />
+      </g>
+    )
+  }
+
+  {
+    type === 'monogram' && (
+      <g stroke="currentColor" fill="none" stroke-linecap="round">
+        <circle cx="50" cy="50" r="37" stroke-width="2" />
+        <path d="M34 68 50 30 66 68" stroke-width="3.4" stroke-linejoin="round" />
+        <path d="M41 56h18" stroke-width="3.4" />
+      </g>
+    )
+  }
+
+  {
+    type === 'orbit' && (
+      <g stroke="currentColor" fill="none">
+        <ellipse cx="50" cy="50" rx="38" ry="16" transform="rotate(-30 50 50)" stroke-width="3" />
+        <ellipse cx="50" cy="50" rx="38" ry="16" transform="rotate(30 50 50)" stroke-width="3" />
+        <circle cx="50" cy="50" r="9.5" fill="currentColor" stroke="none" />
+        <circle cx="83" cy="31" r="5" fill="currentColor" stroke="none" />
+        <circle cx="17" cy="69" r="5" fill="currentColor" stroke="none" />
+      </g>
+    )
+  }
+
+  {
+    type === 'typeblock' && (
+      <g stroke="currentColor" stroke-linecap="round">
+        <rect x="15" y="21" width="70" height="58" rx="3" stroke-width="3.5" fill="none" />
+        <path d="M27 40h33" stroke-width="7" />
+        <path d="M27 56h46" stroke-width="3" />
+        <path d="M27 66h38" stroke-width="3" />
+      </g>
+    )
+  }
+
+  {
+    type === 'chart' && (
+      <g stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M13 86h74" stroke-width="2.5" opacity="0.45" />
+        <path d="M15 74 36 55 52 63 70 38" stroke-width="4.5" />
+        <path d="M70 38h16" stroke-width="4.5" opacity="0.4" />
+        <circle cx="70" cy="38" r="6" fill="currentColor" stroke="none" />
+        <path d="M22 86V78M36 86V70M50 86V76M64 86V64" stroke-width="5" opacity="0.35" />
+      </g>
+    )
+  }
+
+  {
+    type === 'seal' && (
+      <g stroke="currentColor" fill="none">
+        <circle cx="50" cy="50" r="37" stroke-width="2.4" />
+        <circle cx="50" cy="50" r="28" stroke-width="1.6" stroke-dasharray="3 6" />
+        <path d="M50 33 67 50 50 67 33 50Z" stroke-width="3" stroke-linejoin="round" />
+        <circle cx="50" cy="50" r="4.5" fill="currentColor" stroke="none" />
+      </g>
+    )
+  }
+</svg>
+
+<style>
+  .mk {
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+</style>

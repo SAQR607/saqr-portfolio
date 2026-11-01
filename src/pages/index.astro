@@ -1,0 +1,53 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from '../components/home/Hero.astro';
+import Toolkit from '../components/home/Toolkit.astro';
+import Work from '../components/home/Work.astro';
+import About from '../components/home/About.astro';
+import Capabilities from '../components/home/Capabilities.astro';
+import Contact from '../components/home/Contact.astro';
+import { site } from '../data/site.js';
+
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: site.fullName,
+  alternateName: 'SAQR',
+  jobTitle: site.role,
+  email: `mailto:${site.email}`,
+  url: site.url,
+  description: site.description,
+  knowsAbout: [
+    'Front-end development',
+    'UI/UX design',
+    'Design systems',
+    'Web animation',
+    'Web performance',
+    'Accessibility',
+  ],
+};
+
+const websiteData = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: site.fullName,
+  url: site.url,
+  description: site.description,
+  author: { '@type': 'Person', name: site.fullName },
+};
+---
+
+<Base
+  canonicalPath="/"
+  structuredData={structuredData}
+  preloadPortrait
+>
+  <Hero />
+  <Toolkit />
+  <Work />
+  <About />
+  <Capabilities />
+  <Contact />
+
+  <script type="application/ld+json" set:html={JSON.stringify(websiteData)} />
+</Base>

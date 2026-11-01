@@ -1,0 +1,24 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+.astro/
+
+# Local env / editor
+.env
+.env.*
+*.local
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Logs
+npm-debug.log*
+*.log
+
+# Dev-only QA artifacts (never deploy)
+qa-*.png
+preview.html
+_preview.html

@@ -1,0 +1,25 @@
+{
+  "name": "Ibrahim Ahmed (SAQR) — Front-End Developer Portfolio",
+  "short_name": "SAQR",
+  "description": "Portfolio of Ibrahim Ahmed (SAQR) — front-end developer and UI engineer.",
+  "start_url": "/saqr-portfolio/",
+  "scope": "/saqr-portfolio/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0a0a0c",
+  "theme_color": "#0a0a0c",
+  "icons": [
+    {
+      "src": "/saqr-portfolio/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/saqr-portfolio/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

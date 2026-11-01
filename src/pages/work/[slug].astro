@@ -1,0 +1,836 @@
+---
+import Base from '../../layouts/Base.astro';
+import ProjectMockup from '../../components/work/ProjectMockup.astro';
+import ResponsivePreview from '../../components/work/ResponsivePreview.astro';
+import PosterMark from '../../components/PosterMark.astro';
+import { projects, getProject, getAdjacent } from '../../data/projects.js';
+import { projectFonts } from '../../lib/project-fonts.js';
+import { withBase } from '../../lib/paths.js';
+import { site } from '../../data/site.js';
+
+export function getStaticPaths() {
+  return projects.map((project) => ({ params: { slug: project.slug }, props: { project } }));
+}
+
+const { project } = Astro.props;
+const { prev, next } = getAdjacent(project.slug);
+const fonts = projectFonts(project.slug);
+
+const description = `${project.name} — ${project.kind}. ${project.tagline} A case study by ${site.fullName}: design system, palette, typography, motion spec and front-end build.`;
+
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'CreativeWork',
+  name: project.name,
+  headline: `${project.name} — ${project.kind}`,
+  description,
+  dateCreated: project.year,
+  author: { '@type': 'Person', name: site.fullName },
+  creator: { '@type': 'Person', name: site.fullName },
+  keywords: [project.kind, 'front-end', 'UI design', 'case study', ...project.stack.foundation],
+};
+
+const vars = [
+  `--pj-bg:${project.surface}`,
+  `--pj-fg:${project.ink}`,
+  `--pj-ac:${project.accent}`,
+  `--pj-ac-soft:${project.accentSoft}`,
+  `--pj-display:${fonts.display}, serif`,
+  `--pj-body:${fonts.body}, sans-serif`,
+  `--pj-mono:${fonts.mono}, monospace`,
+].join(';');
+
+const stackGroups = [
+  ['Foundation', project.stack.foundation],
+  ['Styling', project.stack.style],
+  ['Motion', project.stack.motion],
+  ['Tooling', project.stack.tooling],
+];
+---
+
+<Base
+  title={`${project.name} — ${project.kind}`}
+  description={description}
+  canonicalPath={`/work/${project.slug}/`}
+  imageAlt={`${project.name} — ${project.kind}, case study by ${site.fullName}`}
+  type="article"
+  structuredData={structuredData}
+>
+  <article class="case" style={vars}>
+    {/* ============================================================ hero == */}
+    <header class="case__hero" data-hero>
+      <span class="case__wash" aria-hidden="true"></span>
+
+      <div class="wrap">
+        <nav class="crumb" aria-label="Breadcrumb" data-hero-eyebrow>
+          <a href={withBase('/#work')} class="tlink tlink--draw">Work</a>
+          <span aria-hidden="true">/</span>
+          <span class="crumb__here">{project.name}</span>
+        </nav>
+
+        <p class="eyebrow" data-hero-eyebrow>
+          {project.idx} — Case study · {project.year}
+        </p>
+
+        <h1 class="display case__title">
+          <span class="line-mask"><span>{project.name}</span></span>
+        </h1>
+
+        <p class="case__tagline" data-hero-fade>
+          {project.tagline}
+        </p>
+
+        <dl class="meta" data-hero-index>
+          <div class="meta__cell">
+            <dt>Discipline</dt>
+            <dd>{project.kind}</dd>
+          </div>
+          <div class="meta__cell">
+            <dt>Role</dt>
+            <dd>{project.role}</dd>
+          </div>
+          <div class="meta__cell">
+            <dt>Duration</dt>
+            <dd>{project.duration}</dd>
+          </div>
+          <div class="meta__cell">
+            <dt>Identity</dt>
+            <dd class="meta__mark">
+              <PosterMark type={project.mark} />
+            </dd>
+          </div>
+        </dl>
+      </div>
+    </header>
+
+    {/* ======================================================== preview == */}
+    <section class="section" aria-labelledby="s-preview">
+      <div class="wrap">
+        <header class="sec-head" data-reveal>
+          <p class="eyebrow">01 — Full-page preview</p>
+          <h2 class="h2" id="s-preview">The home page, <em>end to end</em>.</h2>
+          <p class="lede">
+            Drawn in {project.name}’s own palette and type — every band below is the
+            real layout, rendered in HTML rather than shipped as a screenshot.
+          </p>
+        </header>
+
+        <div data-reveal="scale" data-delay="0.05">
+          <ProjectMockup project={project} />
+        </div>
+      </div>
+    </section>
+
+    {/* ======================================================= overview == */}
+    <section class="section section--tight" aria-labelledby="s-overview">
+      <div class="wrap wrap--narrow">
+        <header class="sec-head" data-reveal>
+          <p class="eyebrow">02 — Overview</p>
+          <h2 class="h2" id="s-overview">The problem, and the <em>answer</em>.</h2>
+        </header>
+
+        <div class="brief" data-stagger>
+          <div class="brief__cell" data-reveal-child>
+            <h3 class="brief__k">Brief</h3>
+            <p class="brief__v">{project.problem}</p>
+          </div>
+          <div class="brief__cell brief__cell--ac" data-reveal-child>
+            <h3 class="brief__k">Approach</h3>
+            <p class="brief__v">{project.solution}</p>
+          </div>
+        </div>
+
+        <div class="prose" data-reveal>
+          {project.overview.map((para) => <p class="body-text">{para}</p>)}
+        </div>
+      </div>
+    </section>
+
+    {/* ========================================================== pages == */}
+    <section class="section section--tight" aria-labelledby="s-pages">
+      <div class="wrap">
+        <header class="sec-head" data-reveal>
+          <p class="eyebrow">03 — Information architecture</p>
+          <h2 class="h2" id="s-pages">Pages, and the sections <em>inside them</em>.</h2>
+        </header>
+
+        <div class="ia" data-stagger>
+          <div class="ia__col" data-reveal-child>
+            <h3 class="ia__k">Pages</h3>
+            <ol class="ia__list ia__list--pages">
+              {
+                project.pages.map((page, i) => (
+                  <li class="ia__item">
+                    <span class="ia__n">{String(i + 1).padStart(2, '0')}</span>
+                    <span class="ia__t">{page}</span>
+                  </li>
+                ))
+              }
+            </ol>
+          </div>
+
+          <div class="ia__col" data-reveal-child>
+            <h3 class="ia__k">Home page sections</h3>
+            <ol class="ia__list">
+              {
+                project.sections.map((section, i) => (
+                  <li class="ia__item">
+                    <span class="ia__n">{String(i + 1).padStart(2, '0')}</span>
+                    <span class="ia__t">{section}</span>
+                  </li>
+                ))
+              }
+            </ol>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    {/* ======================================================== palette == */}
+    <section class="section section--tight" aria-labelledby="s-palette">
+      <div class="wrap">
+        <header class="sec-head" data-reveal>
+          <p class="eyebrow">04 — Colour</p>
+          <h2 class="h2" id="s-palette">A palette with <em>rules</em>, not just swatches.</h2>
+        </header>
+
+        <ul class="pal" data-stagger>
+          {
+            project.palette.map((c) => (
+              <li class="pal__item" data-reveal-child>
+                <span class="pal__chip" style={`background:${c.hex}`}>
+                  <span class="pal__hex">{c.hex.toUpperCase()}</span>
+                </span>
+                <span class="pal__meta">
+                  <span class="pal__name">{c.name}</span>
+                  <span class="pal__use">{c.use}</span>
+                </span>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </section>
+
+    {/* ==================================================== typography == */}
+    <section class="section section--tight" aria-labelledby="s-type">
+      <div class="wrap">
+        <header class="sec-head" data-reveal>
+          <p class="eyebrow">05 — Typography</p>
+          <h2 class="h2" id="s-type">Type, at the sizes it <em>actually runs</em>.</h2>
+          <p class="lede">
+            Live specimens — each line renders in the real family, not a picture of it.
+          </p>
+        </header>
+
+        <ul class="type" data-stagger>
+          {
+            project.typography.map((t) => (
+              <li class="type__item" data-reveal-child>
+                <div class="type__head">
+                  <span class="type__role">{t.role}</span>
+                  <span class="type__spec">
+                    {t.family} · {t.detail} · {t.size}
+                  </span>
+                </div>
+                <p class="type__sample" style={`font-family:${t.family}, serif; font-size:clamp(1.4rem, ${t.size.includes('clamp') ? '3.4vw' : '2vw'}, 2.8rem)`}>
+                  {t.sample}
+                </p>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </section>
+
+    {/* ========================================================= motion == */}
+    <section class="section section--tight" aria-labelledby="s-motion">
+      <div class="wrap">
+        <header class="sec-head" data-reveal>
+          <p class="eyebrow">06 — Motion &amp; interaction</p>
+          <h2 class="h2" id="s-motion">How the interface <em>behaves</em>.</h2>
+        </header>
+
+        <ul class="mot" data-stagger>
+          {
+            project.motion.map((m, i) => (
+              <li class="mot__item" data-reveal-child>
+                <span class="mot__n" aria-hidden="true">
+                  {String(i + 1).padStart(2, '0')}
+                </span>
+                <div class="mot__body">
+                  <div class="mot__head">
+                    <h3 class="mot__t">{m.title}</h3>
+                    <span class="tag mot__kind">{m.kind}</span>
+                  </div>
+                  <p class="mot__d">{m.detail}</p>
+                </div>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </section>
+
+    {/* ===================================================== decisions == */}
+    <section class="section section--tight" aria-labelledby="s-decisions">
+      <div class="wrap">
+        <header class="sec-head" data-reveal>
+          <p class="eyebrow">07 — Interface decisions</p>
+          <h2 class="h2" id="s-decisions">The calls that shaped <em>the build</em>.</h2>
+        </header>
+
+        <ol class="dec" data-stagger>
+          {
+            project.highlights.map((h) => (
+              <li class="dec__item" data-reveal-child>
+                <span class="dec__n">{h.n}</span>
+                <h3 class="dec__t">{h.title}</h3>
+                <p class="dec__b">{h.body}</p>
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+    </section>
+
+    {/* ==================================================== responsive == */}
+    <section class="section section--tight" aria-labelledby="s-responsive">
+      <div class="wrap">
+        <header class="sec-head" data-reveal>
+          <p class="eyebrow">08 — Responsive</p>
+          <h2 class="h2" id="s-responsive">One system, <em>three widths</em>.</h2>
+          <p class="lede">{project.responsive.note}</p>
+        </header>
+
+        <div data-reveal>
+          <ResponsivePreview project={project} points={project.responsive.points} />
+        </div>
+      </div>
+    </section>
+
+    {/* ========================================================== stack == */}
+    <section class="section section--tight" aria-labelledby="s-stack">
+      <div class="wrap">
+        <header class="sec-head" data-reveal>
+          <p class="eyebrow">09 — Build</p>
+          <h2 class="h2" id="s-stack">What it’s made <em>of</em>.</h2>
+        </header>
+
+        <dl class="stack" data-stagger>
+          {
+            stackGroups.map(([label, items]) => (
+              <div class="stack__group" data-reveal-child>
+                <dt class="stack__k">{label}</dt>
+                <dd class="stack__v">
+                  {items.map((item) => (
+                    <span class="tag">{item}</span>
+                  ))}
+                </dd>
+              </div>
+            ))
+          }
+        </dl>
+      </div>
+    </section>
+
+    {/* =========================================================== nav == */}
+    <nav class="casenav" aria-label="Case study navigation">
+      <div class="wrap">
+        <div class="casenav__inner">
+          <a
+            class="casenav__link"
+            href={withBase(`/work/${prev.slug}/`)}
+            style={`--ac:${prev.accent}`}
+          >
+            <span class="casenav__dir">← Previous</span>
+            <span class="casenav__name">{prev.name}</span>
+            <span class="casenav__kind">{prev.kind}</span>
+          </a>
+
+          <a class="casenav__all tlink tlink--draw" href={withBase('/#work')}>
+            All projects
+          </a>
+
+          <a
+            class="casenav__link casenav__link--next"
+            href={withBase(`/work/${next.slug}/`)}
+            style={`--ac:${next.accent}`}
+          >
+            <span class="casenav__dir">Next →</span>
+            <span class="casenav__name">{next.name}</span>
+            <span class="casenav__kind">{next.kind}</span>
+          </a>
+        </div>
+      </div>
+    </nav>
+  </article>
+</Base>
+
+<style>
+  /* The case study is authored on the portfolio's own dark canvas; the project
+     palette appears inside previews and specimens rather than taking over. */
+  .case {
+    --pj-ac: var(--accent);
+  }
+
+  /* ============================================================= hero == */
+  .case__hero {
+    position: relative;
+    padding-block: clamp(3.5rem, 9vh, 7rem) clamp(3rem, 7vh, 5.5rem);
+    overflow: hidden;
+  }
+
+  .case__wash {
+    position: absolute;
+    inset: -40% 30% auto -10%;
+    height: 130%;
+    background: radial-gradient(
+      50% 50% at 30% 40%,
+      color-mix(in srgb, var(--pj-ac) 16%, transparent),
+      transparent 70%
+    );
+    pointer-events: none;
+  }
+
+  .crumb {
+    display: flex;
+    align-items: center;
+    gap: 0.6em;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--paper-faint);
+    margin-bottom: clamp(1.5rem, 4vh, 2.75rem);
+  }
+
+  .crumb__here {
+    color: var(--paper-dim);
+  }
+
+  .case__title {
+    margin-block: 0.35em 0.2em;
+    font-size: clamp(3.25rem, 2rem + 8vw, 9rem);
+  }
+
+  .case__tagline {
+    font-size: var(--t-body-lg);
+    color: var(--paper-dim);
+    max-width: 44ch;
+    margin-bottom: clamp(2.25rem, 5vh, 3.5rem);
+  }
+
+  .meta {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+    gap: 1.5rem 2rem;
+    margin: 0;
+    padding-top: 1.75rem;
+    border-top: 1px solid var(--line);
+  }
+
+  .meta__cell dt {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--paper-faint);
+    margin-bottom: 0.4rem;
+  }
+
+  .meta__cell dd {
+    margin: 0;
+    font-size: 0.98rem;
+    color: var(--paper);
+  }
+
+  .meta__mark {
+    width: 1.9rem;
+    color: var(--pj-ac);
+  }
+
+  /* ========================================================= sections == */
+  .section--tight {
+    padding-block: clamp(3.5rem, 8vh, 6.5rem);
+  }
+
+  /* ------------------------------------------------------------ brief -- */
+  .brief {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(19rem, 1fr));
+    gap: clamp(1.25rem, 2.5vw, 2rem);
+    margin-bottom: clamp(2rem, 4vh, 3rem);
+  }
+
+  .brief__cell {
+    padding: clamp(1.4rem, 2.5vw, 2rem);
+    border: 1px solid var(--line);
+    border-radius: var(--r-md);
+    background: var(--ink-850);
+  }
+
+  .brief__cell--ac {
+    border-color: color-mix(in srgb, var(--pj-ac) 34%, transparent);
+    background: color-mix(in srgb, var(--pj-ac) 6%, var(--ink-850));
+  }
+
+  .brief__k {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--paper-faint);
+    margin-bottom: 0.9rem;
+  }
+
+  .brief__cell--ac .brief__k {
+    color: var(--pj-ac);
+  }
+
+  .brief__v {
+    font-size: 1.02rem;
+    line-height: 1.65;
+    color: var(--paper-dim);
+    text-wrap: pretty;
+  }
+
+  .prose {
+    max-width: 68ch;
+  }
+
+  /* -------------------------------------------------------------- IA -- */
+  .ia {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(19rem, 1fr));
+    gap: clamp(2rem, 4vw, 3.5rem);
+  }
+
+  .ia__k {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--paper-faint);
+    padding-bottom: 0.9rem;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 0.25rem;
+  }
+
+  .ia__item {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    padding-block: 0.7rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .ia__n {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    color: var(--pj-ac);
+    flex: none;
+  }
+
+  .ia__t {
+    font-size: 1rem;
+    color: var(--paper);
+  }
+
+  /* --------------------------------------------------------- palette -- */
+  .pal {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+    gap: clamp(1rem, 2vw, 1.5rem);
+  }
+
+  .pal__item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+  }
+
+  .pal__chip {
+    position: relative;
+    display: block;
+    aspect-ratio: 16 / 10;
+    border-radius: var(--r-sm);
+    border: 1px solid var(--line-mid);
+    overflow: hidden;
+  }
+
+  .pal__hex {
+    position: absolute;
+    left: 0.8rem;
+    bottom: 0.6rem;
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    background: rgba(0, 0, 0, 0.42);
+    color: #fff;
+  }
+
+  .pal__meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  .pal__name {
+    font-size: 0.98rem;
+    color: var(--paper);
+  }
+
+  .pal__use {
+    font-size: 0.85rem;
+    color: var(--paper-faint);
+    line-height: 1.5;
+  }
+
+  /* ------------------------------------------------------- typography -- */
+  .type {
+    display: flex;
+    flex-direction: column;
+    border-top: 1px solid var(--line);
+  }
+
+  .type__item {
+    padding-block: clamp(1.4rem, 3vw, 2.25rem);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .type__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.5rem 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .type__role {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--pj-ac);
+  }
+
+  .type__spec {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.06em;
+    color: var(--paper-faint);
+  }
+
+  .type__sample {
+    margin: 0;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    color: var(--paper);
+    text-wrap: balance;
+  }
+
+  /* ----------------------------------------------------------- motion -- */
+  .mot {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(21rem, 1fr));
+    gap: clamp(1.25rem, 2.5vw, 2rem);
+  }
+
+  .mot__item {
+    display: flex;
+    gap: 1.1rem;
+    padding: clamp(1.3rem, 2.4vw, 1.8rem);
+    border: 1px solid var(--line);
+    border-radius: var(--r-md);
+    background: var(--ink-850);
+  }
+
+  .mot__n {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    color: var(--pj-ac);
+    padding-top: 0.3rem;
+    flex: none;
+  }
+
+  .mot__body {
+    min-width: 0;
+  }
+
+  .mot__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.6rem;
+    margin-bottom: 0.6rem;
+  }
+
+  .mot__t {
+    font-size: 1.1rem;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    color: var(--paper);
+  }
+
+  .mot__kind {
+    font-size: 0.62rem;
+  }
+
+  .mot__d {
+    font-size: 0.95rem;
+    line-height: 1.62;
+    color: var(--paper-dim);
+    text-wrap: pretty;
+  }
+
+  /* -------------------------------------------------------- decisions -- */
+  .dec {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(19rem, 1fr));
+    gap: clamp(1.5rem, 3vw, 2.5rem);
+    counter-reset: dec;
+  }
+
+  .dec__item {
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--line-mid);
+  }
+
+  .dec__n {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+    color: var(--pj-ac);
+    margin-bottom: 0.9rem;
+  }
+
+  .dec__t {
+    font-family: var(--font-display);
+    font-size: 1.55rem;
+    font-weight: 400;
+    line-height: 1.1;
+    letter-spacing: -0.015em;
+    color: var(--paper);
+    margin-bottom: 0.7rem;
+    text-wrap: balance;
+  }
+
+  .dec__b {
+    font-size: 0.95rem;
+    line-height: 1.65;
+    color: var(--paper-dim);
+    text-wrap: pretty;
+  }
+
+  /* ------------------------------------------------------------ stack -- */
+  .stack {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+    gap: clamp(1.5rem, 3vw, 2.5rem);
+    margin: 0;
+  }
+
+  .stack__k {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--paper-faint);
+    padding-bottom: 0.8rem;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 1rem;
+  }
+
+  .stack__v {
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  /* -------------------------------------------------------- case nav -- */
+  .casenav {
+    border-top: 1px solid var(--line);
+    padding-block: clamp(2.5rem, 6vh, 4rem);
+  }
+
+  .casenav__inner {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  .casenav__link {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    min-width: 0;
+  }
+
+  .casenav__link--next {
+    text-align: right;
+    align-items: flex-end;
+  }
+
+  .casenav__dir {
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--paper-faint);
+    transition: color 0.35s var(--ease);
+  }
+
+  .casenav__name {
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 3.5vw, 2.3rem);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    color: var(--paper);
+    transition: color 0.35s var(--ease);
+  }
+
+  .casenav__kind {
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--paper-faint);
+  }
+
+  .casenav__link:hover .casenav__dir,
+  .casenav__link:focus-visible .casenav__dir,
+  .casenav__link:hover .casenav__name,
+  .casenav__link:focus-visible .casenav__name {
+    color: var(--ac);
+  }
+
+  .casenav__all {
+    font-size: 0.85rem;
+    color: var(--paper-dim);
+  }
+
+  @media (max-width: 700px) {
+    .casenav__inner {
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem 1rem;
+    }
+
+    .casenav__all {
+      grid-column: 1 / -1;
+      order: 3;
+      justify-self: start;
+    }
+  }
+</style>

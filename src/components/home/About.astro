@@ -1,0 +1,188 @@
+---
+import { withBase } from '../../lib/paths.js';
+import { site, principles } from '../../data/site.js';
+
+const avatar = {
+  srcset: [360, 520, 696]
+    .map((w) => `${withBase(`/img/portrait-${w}.webp`)} ${w}w`)
+    .join(', '),
+  fallback: withBase('/img/portrait-fallback.png'),
+};
+---
+
+<section class="about section" id="about" aria-labelledby="about-title">
+  <div class="wrap about__grid">
+    <figure class="about__fig" data-reveal="scale">
+      <span class="about__frame" aria-hidden="true"></span>
+      <span class="about__shot">
+        <img
+          src={withBase('/img/portrait-520.webp')}
+          srcset={avatar.srcset}
+          sizes="(min-width: 900px) 38vw, 82vw"
+          alt={`${site.fullName}, front-end developer`}
+          width="520"
+          height="1049"
+          loading="lazy"
+          decoding="async"
+        />
+      </span>
+      <figcaption class="about__cap">
+        <span class="about__cap-name">{site.fullName}</span>
+        <span class="about__cap-role">{site.role}</span>
+      </figcaption>
+    </figure>
+
+    <div class="about__body">
+      <header class="sec-head" data-reveal>
+        <p class="eyebrow">02 — About</p>
+        <h2 class="h2" id="about-title">Design sense, <em>engineering</em> discipline.</h2>
+      </header>
+
+      <div class="about__prose" data-reveal>
+        <p class="body-text">
+          I’m Ibrahim Ahmed — a front-end developer working where design and engineering
+          meet. I’m drawn to the parts of the job that are invisible when they’re done
+          properly: the focus ring you never have to hunt for, the layout that never jumps,
+          the transition that reads as one gesture instead of three.
+        </p>
+        <p class="body-text">
+          Most of my time goes into what separates a page that works from one that feels
+          intentional — pacing, hierarchy, rhythm, and the small moments of feedback that
+          make an interface trustworthy.
+        </p>
+      </div>
+
+      <ul class="principles" data-stagger>
+        {
+          principles.map((principle) => (
+            <li class="principle" data-reveal-child>
+              <span class="principle__n" aria-hidden="true">{principle.n}</span>
+              <div class="principle__text">
+                <h3 class="principle__title">{principle.title}</h3>
+                <p class="principle__body">{principle.body}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+</section>
+
+<style>
+  .about__grid {
+    display: grid;
+    gap: clamp(2.5rem, 6vw, 5rem);
+    align-items: start;
+  }
+
+  /* ------------------------------------------------------------- portrait */
+  .about__fig {
+    position: relative;
+    margin: 0;
+    padding-left: clamp(0.9rem, 2vw, 1.6rem);
+    padding-bottom: clamp(0.9rem, 2vw, 1.4rem);
+  }
+
+  .about__frame {
+    position: absolute;
+    inset: 0 0 clamp(2.4rem, 5vw, 3rem) clamp(1.8rem, 3.6vw, 3rem);
+    border: 1px solid var(--accent);
+    opacity: 0.5;
+    border-radius: 4px;
+    z-index: -1;
+  }
+
+  .about__shot {
+    display: block;
+    position: relative;
+    overflow: hidden;
+    border-radius: 3px;
+    background: linear-gradient(160deg, var(--ink-750), var(--ink-900));
+    aspect-ratio: 4 / 5;
+  }
+
+  .about__shot img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 50% 6%;
+    filter: grayscale(0.15) contrast(1.04);
+    transition: filter 0.7s var(--ease), transform 0.9s var(--ease);
+  }
+
+  .about__fig:hover .about__shot img {
+    filter: grayscale(0) contrast(1.06);
+    transform: scale(1.02);
+  }
+
+  .about__cap {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    margin-top: clamp(0.9rem, 2vw, 1.35rem);
+  }
+
+  .about__cap-name {
+    font-family: var(--font-display);
+    font-size: clamp(1.15rem, 2.2vw, 1.5rem);
+    letter-spacing: -0.015em;
+  }
+
+  .about__cap-role {
+    font-family: var(--font-mono);
+    font-size: 0.63rem;
+    letter-spacing: 0.17em;
+    text-transform: uppercase;
+    color: var(--paper-faint);
+  }
+
+  /* --------------------------------------------------------------- prose */
+  .about__prose {
+    margin-bottom: clamp(2rem, 5vw, 3.25rem);
+  }
+
+  .principles {
+    display: flex;
+    flex-direction: column;
+    border-top: 1px solid var(--line);
+  }
+
+  .principle {
+    display: grid;
+    grid-template-columns: 2.75rem minmax(0, 1fr);
+    gap: clamp(0.75rem, 2vw, 1.5rem);
+    padding-block: clamp(1.15rem, 2.6vw, 1.65rem);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .principle__n {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+    color: var(--accent);
+    padding-top: 0.35em;
+  }
+
+  .principle__title {
+    font-family: var(--font-sans);
+    font-size: clamp(1rem, 1.6vw, 1.12rem);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    line-height: 1.35;
+    margin-bottom: 0.4rem;
+  }
+
+  .principle__body {
+    font-size: 0.95rem;
+    line-height: 1.65;
+    color: var(--paper-dim);
+    max-width: 54ch;
+  }
+
+  @media (min-width: 900px) {
+    .about__grid {
+      grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+    }
+  }
+</style>

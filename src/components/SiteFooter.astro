@@ -1,0 +1,257 @@
+---
+import { HOME, withBase } from '../lib/paths.js';
+import { site, nav } from '../data/site.js';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="ftr">
+  <div class="wrap">
+    <div class="ftr__top">
+      <div class="ftr__brand">
+        <a class="ftr__wordmark" href={HOME}>
+          Ibrahim Ahmed <span>(SAQR)</span>
+        </a>
+        <p class="ftr__role">{site.role}</p>
+        <p class="ftr__avail">
+          <span class="ftr__dot" aria-hidden="true"></span>
+          {site.availability}
+        </p>
+      </div>
+
+      <nav class="ftr__col" aria-label="Footer">
+        <p class="ftr__label">Index</p>
+        <ul>
+          {
+            nav.map((item) => (
+              <li>
+                <a class="ftr__link" href={withBase(item.href)} data-nav-link>{item.label}</a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+
+      <div class="ftr__col" data-copy-scope>
+        <p class="ftr__label">Contact</p>
+        <ul>
+          <li>
+            <a class="ftr__link ftr__link--mail" href={`mailto:${site.email}`}>{site.email}</a>
+          </li>
+        </ul>
+        <button class="ftr__copy" type="button" data-copy-email>
+          <span data-copy-label>Copy email</span>
+        </button>
+        <p class="ftr__status mono" role="status" aria-live="polite" data-copy-status></p>
+      </div>
+    </div>
+
+    <div class="ftr__bottom">
+      <p class="mono">© {year} {site.fullName}</p>
+
+      <p class="mono ftr__built">
+        Built with {site.builtWith.join(' · ')}
+      </p>
+
+      <button class="ftr__top-btn" type="button" data-to-top>
+        Back to top
+        <svg viewBox="0 0 12 12" width="11" height="11" aria-hidden="true" focusable="false">
+          <path d="M6 11V1M1.5 5.5 6 1l4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </button>
+    </div>
+
+    <p class="ftr__big" aria-hidden="true">SAQR</p>
+  </div>
+</footer>
+
+<style>
+  .ftr {
+    position: relative;
+    margin-top: clamp(3rem, 8vh, 6rem);
+    border-top: 1px solid var(--line);
+    padding-block: clamp(3rem, 7vh, 5rem) clamp(1.5rem, 4vh, 2.5rem);
+    overflow: hidden;
+  }
+
+  .ftr__top {
+    display: grid;
+    gap: clamp(2.25rem, 5vw, 4rem);
+    grid-template-columns: 1fr;
+    padding-bottom: clamp(2.5rem, 6vh, 4rem);
+  }
+
+  .ftr__wordmark {
+    display: inline-block;
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 3vw, 2.1rem);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    transition: color 0.4s var(--ease);
+  }
+
+  .ftr__wordmark span {
+    color: var(--accent);
+    font-style: italic;
+  }
+
+  .ftr__wordmark:hover {
+    color: var(--accent);
+  }
+
+  .ftr__role {
+    margin-top: 0.85rem;
+    color: var(--paper-dim);
+    font-size: 0.95rem;
+  }
+
+  .ftr__avail {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6em;
+    margin-top: 1.1rem;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--paper-faint);
+  }
+
+  .ftr__dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #6ee7a8;
+    box-shadow: 0 0 10px 1px rgba(110, 231, 168, 0.55);
+    flex: none;
+  }
+
+  .ftr__label {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--paper-faint);
+    margin-bottom: 1.1rem;
+  }
+
+  .ftr__col ul {
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+  }
+
+  .ftr__link {
+    font-size: 0.95rem;
+    color: var(--paper-dim);
+    transition: color 0.35s var(--ease);
+  }
+
+  .ftr__link:hover,
+  .ftr__link:focus-visible {
+    color: var(--accent);
+  }
+
+  .ftr__link--mail {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    word-break: break-word;
+  }
+
+  .ftr__copy {
+    margin-top: 1.1rem;
+    padding: 0.55em 1.1em;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--paper-dim);
+    transition:
+      color 0.35s var(--ease),
+      border-color 0.35s var(--ease);
+  }
+
+  .ftr__copy:hover,
+  .ftr__copy:focus-visible {
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+
+  .ftr__status {
+    min-height: 1.2em;
+    margin-top: 0.5rem;
+    font-size: 0.7rem;
+    color: var(--accent);
+  }
+
+  .ftr__bottom {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem 1.75rem;
+    padding-top: clamp(1.5rem, 4vh, 2.25rem);
+    border-top: 1px solid var(--line);
+    font-size: 0.72rem;
+    color: var(--paper-faint);
+  }
+
+  .ftr__built {
+    order: 3;
+    width: 100%;
+    color: var(--paper-faint);
+  }
+
+  .ftr__top-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55em;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--paper-dim);
+    transition: color 0.35s var(--ease);
+  }
+
+  .ftr__top-btn svg {
+    transition: transform 0.4s var(--ease);
+  }
+
+  .ftr__top-btn:hover,
+  .ftr__top-btn:focus-visible {
+    color: var(--accent);
+  }
+
+  .ftr__top-btn:hover svg {
+    transform: translateY(-3px);
+  }
+
+  /* Oversized watermark */
+  .ftr__big {
+    position: relative;
+    z-index: -1;
+    margin-top: clamp(1.5rem, 4vw, 3rem);
+    font-family: var(--font-display);
+    font-size: clamp(5rem, 22vw, 19rem);
+    line-height: 0.78;
+    letter-spacing: -0.04em;
+    text-align: center;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(242, 239, 233, 0.07);
+    user-select: none;
+  }
+
+  @media (min-width: 720px) {
+    .ftr__top {
+      grid-template-columns: 1.4fr 0.7fr 1fr;
+    }
+
+    .ftr__built {
+      order: 0;
+      width: auto;
+    }
+  }
+</style>

@@ -1,0 +1,7 @@
+# SAQR — portfolio of Ibrahim Ahmed (SAQR)
+# https://saqr607.github.io/saqr-portfolio/
+
+User-agent: *
+Allow: /
+
+Sitemap: https://saqr607.github.io/saqr-portfolio/sitemap.xml
